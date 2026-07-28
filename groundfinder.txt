@@ -1,0 +1,57 @@
+# ==========================================
+# SCRIPT PEMBERSIH TARGET SPESIFIK (DRIVE C)
+# ==========================================
+
+$logFile = "$HOME\Desktop\Log_Pemulihan_TargetC.txt"
+Start-Transcript -Path $logFile -Force
+
+# Daftar folder spesifik yang berisi aplikasi/user files (Aman dan terjangkau)
+$targetFolders = @(
+    "C:\Program Files",
+    "C:\Program Files (x86)",
+    "C:\Users\Ralvin"
+)
+
+Write-Host "Memulai pembersihan terarah pada folder aplikasi dan user..." -ForegroundColor Cyan
+
+foreach ($folder in $targetFolders) {
+    if (Test-Path $folder) {
+        Write-Host "`nMemindai direktori: $folder" -ForegroundColor Yellow
+        
+        Get-ChildItem -Path $folder -Recurse -Filter "g*.exe" -Force -ErrorAction SilentlyContinue | ForEach-Object {
+            $currentFile = $_
+            $dirPath = $currentFile.Directory.FullName
+            $gFileName = $currentFile.Name
+            $originalName = $gFileName.Substring(1)
+            $fakeVirusPath = Join-Path -Path $dirPath -ChildPath $originalName
+
+            if (Test-Path -Path $fakeVirusPath) {
+                $fakeFile = Get-Item -Path $fakeVirusPath -Force -ErrorAction SilentlyContinue
+                
+                # Validasi ukuran virus (< 1MB)
+                if ($null -ne $fakeFile -and $fakeFile.Length -lt 1048576) {
+                    
+                    # 1. Hapus virus tiruan
+                    Remove-Item -Path $fakeVirusPath -Force -ErrorAction SilentlyContinue
+                    Write-Host "[-] Virus Dihapus  : $fakeVirusPath" -ForegroundColor Red
+                    
+                    # 2. Kembalikan nama asli
+                    Rename-Item -Path $currentFile.FullName -NewName $originalName -Force -ErrorAction SilentlyContinue
+                    
+                    # 3. Unhide file asli
+                    $restoredItem = Get-Item -Path "$dirPath\$originalName" -Force -ErrorAction SilentlyContinue
+                    if ($null -ne $restoredItem) {
+                        $restoredItem.Attributes = "Normal"
+                        Write-Host "[+] Dipulihkan & Unhidden: $dirPath\$originalName" -ForegroundColor Green
+                    }
+                }
+            }
+        }
+    }
+}
+
+Write-Host "`n=========================================" -ForegroundColor Yellow
+Write-Host "PEMBERSIHAN SELESAI!" -ForegroundColor Green
+Write-Host "Log disimpan di: $logFile" -ForegroundColor Green
+Write-Host "=========================================" -ForegroundColor Yellow
+Stop-Transcript

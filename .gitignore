@@ -1,0 +1,7 @@
+# Ignore logs
+Log_Pemulihan_Grenam.txt
+*.log
+
+# Ignore temporary/scratch files
+scratch/
+temp/
