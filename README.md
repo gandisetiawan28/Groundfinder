@@ -16,6 +16,25 @@ Virus Grenam (sering dideteksi sebagai **`Win32/Grenam.VA!MSR`** atau Trojan) ad
 
 ---
 
+## 💥 Contoh Kasus Ekstrem Infeksi & Kerusakan
+
+Berikut adalah beberapa skenario kasus ekstrem nyata bagaimana virus Grenam menginfeksi berkas non-executable dan melumpuhkan sistem kerja:
+
+### 1. Rusaknya Modul Android Studio (IDE) 📱
+* **Skenario Infeksi:** Virus menyusup ke direktori inti Android Studio: `C:\Program Files\Android\Android Studio\lib\modules\`.
+* **Modifikasi Berkas:** Berkas **`.jar`** (seperti `intellij.platform.execution.dashboard.jar`) digantikan oleh payload virus PE executable berukuran **521.5 KB** tetapi logonya tetap berformat `.jar`. Sementara file aslinya disembunyikan dengan nama `gintellij.platform.execution.dashboard.jar`.
+* **Dampak Ekstrem:** Windows Defender secara terus-menerus memunculkan alert ancaman berat (`Win32/Grenam.VA!MSR`). Ketika file tersebut di-karantina oleh antivirus, fitur *execution dashboard* Android Studio langsung **rusak total** dan tidak dapat digunakan.
+
+### 2. Lumpuhnya Dart SDK / Flutter Compiler 🛠️
+* **Skenario Infeksi:** Berkas **`gen_snapshot.exe`** (salah satu file terpenting dalam kompilasi aplikasi Flutter) yang terletak di subfolder SDK Flutter di-rename menjadi `en_snapshot.exe` (awalan `g` dibuang oleh skrip antivirus/manual, menyisakan nama yang salah).
+* **Dampak Ekstrem:** Seluruh proses kompilasi aplikasi Android/iOS menggunakan Flutter langsung **macet total (gagal build)** dengan pesan error file tidak ditemukan. Skrip ini melacak dan mengembalikan file compiler tersebut secara otomatis ke direktori asalnya tanpa harus mengunduh ulang SDK Flutter sebesar gigaan byte.
+
+### 3. Hilangnya Launcher Game (Kasus Steam/Game Offline) 🎮
+* **Skenario Infeksi:** Launcher game (seperti `SparkingZERO.exe` atau `NFSC.exe`) digantikan oleh virus.
+* **Dampak Ekstrem:** Pengguna yang menggunakan utilitas pembersih biasa mendapati game mereka **tidak dapat dibuka sama sekali** karena file eksekusi utamanya hilang dihapus antivirus. Skrip ini secara otomatis mendeteksi berkas tersembunyi `gSparkingZERO.exe` / `gNFSC.exe` dan mengembalikannya ke kondisi normal.
+
+---
+
 ## 🚀 Fitur Utama
 
 | Fitur | Penjelasan | Keunggulan Teknis |
