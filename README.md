@@ -4,6 +4,18 @@ Sebuah skrip PowerShell yang dirancang secara khusus untuk mendeteksi, membersih
 
 ---
 
+## 😈 Bahaya Virus Grenam (Win32/Grenam)
+
+Virus Grenam (sering dideteksi sebagai **`Win32/Grenam.VA!MSR`** atau Trojan) adalah malware jenis *Companion Trojan / File Infector* yang sangat merusak. Berikut adalah bahaya utama dari virus ini:
+
+1. **Pembajakan Aplikasi (Hijacking):** Virus mendeteksi file aplikasi Anda (`.exe`, `.manifest`, `.blockmap`, `.jar`), mengubah namanya dengan menambahkan awalan `g` (misal `foo.exe` -> `gfoo.exe`), lalu menyembunyikannya secara permanen. Di tempat file asli, virus menaruh biner samaran dirinya sendiri (**~521 KB**). Setiap kali Anda menjalankan aplikasi tersebut, Anda sebenarnya menjalankan proses virus terlebih dahulu.
+2. **Merusak Workspace Developer & Gamer:** Menginfeksi berkas dependensi compiler/IDE (seperti `esbuild.exe`, `gen_snapshot.exe`, file `.jar` pada Android Studio) dan launcher game, menyebabkan error kompilasi total atau game tidak dapat dijalankan.
+3. **Meninggalkan Kerusakan Setelah Dihapus Antivirus:** Ketika antivirus menghapus file virus samaran (~521 KB), antivirus tidak memulihkan file asli Anda yang disembunyikan dalam format `g*.exe`/`g*.jar`. Akibatnya, aplikasi Anda akan rusak dan hilang dari sistem secara permanen. *Skrip ini dibuat khusus untuk membalikkan kerusakan ini dan menyelamatkan file asli Anda.*
+4. **Pencurian Data & Backdoor:** Sebagai Trojan aktif, ia dapat mencuri data browser (kredensial, cookies, token API), memata-matai penekanan tombol (*keylogging*), atau mengunduh malware berbahaya lainnya.
+5. **Penyebaran Lateral:** Virus mendeteksi penyimpanan eksternal (Flashdisk/Harddisk) atau folder jaringan bersama (*Network Share*), lalu segera menginfeksi seluruh file executable di dalamnya agar dapat menyebar ke perangkat lain.
+
+---
+
 ## 🚀 Fitur Utama
 
 | Fitur | Penjelasan | Keunggulan Teknis |
