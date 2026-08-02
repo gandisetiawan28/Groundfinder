@@ -40,9 +40,9 @@ function Get-SafeChildItem {
         Write-Progress -Activity "Memindai Virus Grenam" -Status "Memindai: $Path"
     }
     
-    # Cari file g* dengan ekstensi .exe, .ico, .manifest, .manifico, .blockmap, .blockico, atau .jar di folder ini
+    # Cari file g* dengan ekstensi .exe, .ico, .manifest, .manifico, .blockmap, .blockico, .jar, .html, atau .hico di folder ini
     $files = Get-ChildItem -Path $Path -Filter "g*" -Force -ErrorAction SilentlyContinue | Where-Object { 
-        -not $_.PSIsContainer -and ($_.Extension -eq ".exe" -or $_.Extension -eq ".ico" -or $_.Extension -eq ".manifest" -or $_.Extension -eq ".manifico" -or $_.Extension -eq ".blockmap" -or $_.Extension -eq ".blockico" -or $_.Extension -eq ".jar")
+        -not $_.PSIsContainer -and ($_.Extension -eq ".exe" -or $_.Extension -eq ".ico" -or $_.Extension -eq ".manifest" -or $_.Extension -eq ".manifico" -or $_.Extension -eq ".blockmap" -or $_.Extension -eq ".blockico" -or $_.Extension -eq ".jar" -or $_.Extension -eq ".html" -or $_.Extension -eq ".hico")
     }
     if ($files) {
         foreach ($file in $files) { $results += $file }
@@ -284,7 +284,7 @@ foreach ($path in $scanPaths) {
         if ($isRootOrJunctionParent) {
             Write-Host "`n[+] Memindai Folder Tingkat Atas (Non-Rekursif): $path" -ForegroundColor Yellow
             $files = Get-ChildItem -Path $path -Filter "g*" -Force -ErrorAction SilentlyContinue | Where-Object {
-                -not $_.PSIsContainer -and ($_.Extension -eq ".exe" -or $_.Extension -eq ".ico" -or $_.Extension -eq ".manifest" -or $_.Extension -eq ".manifico")
+                -not $_.PSIsContainer -and ($_.Extension -eq ".exe" -or $_.Extension -eq ".ico" -or $_.Extension -eq ".manifest" -or $_.Extension -eq ".manifico" -or $_.Extension -eq ".blockmap" -or $_.Extension -eq ".blockico" -or $_.Extension -eq ".jar" -or $_.Extension -eq ".html" -or $_.Extension -eq ".hico")
             }
         } else {
             Write-Host "`n[+] Memindai folder secara rekursif (Aman): $path" -ForegroundColor Yellow
@@ -297,13 +297,13 @@ foreach ($path in $scanPaths) {
             $dirPath = $currentFile.Directory.FullName
             $fileName = $currentFile.Name
             
-            if ($currentFile.Extension -eq ".ico" -or $currentFile.Extension -eq ".manifico" -or $currentFile.Extension -eq ".blockico") {
-                # Cek berkas .ico, .manifico, atau .blockico palsu/rusak (0 KB)
+            if ($currentFile.Extension -eq ".ico" -or $currentFile.Extension -eq ".manifico" -or $currentFile.Extension -eq ".blockico" -or $currentFile.Extension -eq ".hico") {
+                # Cek berkas .ico, .manifico, .blockico, atau .hico palsu/rusak (0 KB)
                 if ($currentFile.Length -eq 0) {
                     $icosToDelete += $currentFile.FullName
                 }
             }
-            elseif ($currentFile.Extension -eq ".exe" -or $currentFile.Extension -eq ".manifest" -or $currentFile.Extension -eq ".blockmap" -or $currentFile.Extension -eq ".jar") {
+            elseif ($currentFile.Extension -eq ".exe" -or $currentFile.Extension -eq ".manifest" -or $currentFile.Extension -eq ".blockmap" -or $currentFile.Extension -eq ".jar" -or $currentFile.Extension -eq ".html") {
                 # Cek apakah file ini ada di daftar pengecualian berkas bersih
                 $isCleanTool = $false
                 $nameToCheck = $fileName
@@ -434,10 +434,10 @@ foreach ($path in $scanPaths) {
                     # Tetapi file asli yang diubah namanya menjadi 'g*.exe' masih ada.
                     # Kita pulihkan berkas asli ini!
                     
-                    # Khusus file .jar, kita harus pastikan file tersebut tersembunyi (Hidden/System)
-                    # agar tidak merusak/mengubah nama file .jar bersih (seperti groovy.jar)
+                    # Khusus file .jar atau .html, kita harus pastikan file tersebut tersembunyi (Hidden/System)
+                    # agar tidak merusak/mengubah nama file bersih (seperti groovy.jar atau gmenu.html)
                     $isOriginalHidden = $currentFile.Attributes.HasFlag([System.IO.FileAttributes]::Hidden) -or $currentFile.Attributes.HasFlag([System.IO.FileAttributes]::System)
-                    if ($currentFile.Extension -eq ".jar" -and -not $isOriginalHidden) {
+                    if (($currentFile.Extension -eq ".jar" -or $currentFile.Extension -eq ".html") -and -not $isOriginalHidden) {
                         continue
                     }
                     
